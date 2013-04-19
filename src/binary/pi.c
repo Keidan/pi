@@ -58,6 +58,7 @@ void usage(int err) {
 
 int main(int argc, char** argv) {
   int opt;
+  long page_size_kb;
   struct process_list_s* iter;
   struct process_stat_s stat;
   fprintf(stdout, "Process Information is a FREE software v%d.%d.\nCopyright 2011-2013 By kei\nLicense GPL.\n", PI_VERSION_MAJOR, PI_VERSION_MINOR);
@@ -96,10 +97,12 @@ int main(int argc, char** argv) {
     usage(EXIT_FAILURE);
   }
 
+  page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
 
   /* parse la liste */
   list_for_each_entry(iter, &list_process.list, list) {
     pi_parser_proc_stat(&stat, iter->pid);
+    
     printf("Process stat:\n");
     printf("\tPID: %d.\n\tName: %s.\n", stat.pid, stat.name);
     printf("\tState: %c (%s).\n", stat.state.st, stat.state.desc);
@@ -123,6 +126,8 @@ int main(int argc, char** argv) {
     printf("\tCPU scheduled: %d.\n\tRT priority: %lu.\n", stat.processor, stat.rtprio);
     printf("\tScheduling policy: %lu.\n\tTime wait for I/O: %lu.\n", stat.sched, stat.twait);
     printf("\tGuest time: %llu jiffies.\n\tGuest time (childs): %llu jiffies.\n", stat.gtime, stat.gctime);
+
+    printf("\n\tVM USAGE: %lf.\n\tResident SET: %ld.\n", stat.vsize / 1024.0, stat.vm_rss * page_size_kb);
   }
   return 0;
 }
