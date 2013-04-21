@@ -5,8 +5,22 @@
 #include <sys/types.h>
 #include <sys/param.h>
 
+#define USEC_PER_SEC         1000000UL
+
 void pi_utils_get_proc_filename(char filename[FILENAME_MAX], int pid, const char* file) {
   snprintf(filename, FILENAME_MAX, "/proc/%d/%s", pid, file);
+}
+
+//define BLTPR_USEC_PER_SEC         1000000UL
+
+long long pi_utils_jiffies_to_microsecond(long long jiffies) {
+  long hz = sysconf(_SC_CLK_TCK);
+  if (hz <= USEC_PER_SEC && !(USEC_PER_SEC % hz))
+    return (USEC_PER_SEC / hz) * jiffies;
+  else if (hz > USEC_PER_SEC && !(hz % USEC_PER_SEC))
+    return (jiffies + (hz / USEC_PER_SEC) - 1) / (hz / USEC_PER_SEC);
+  else
+    return (jiffies * USEC_PER_SEC) / hz;
 }
 
 double pi_utils_get_page_size_in(pi_unit_et unit) {

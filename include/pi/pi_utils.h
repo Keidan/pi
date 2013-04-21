@@ -43,5 +43,6 @@ typedef enum { PI_UNIT_BYTE, PI_UNIT_KBYTES, PI_UNIT_MBYTES, PI_UNIT_GBYTES} pi_
   long pi_utils_get_nprocessors_online();
   unsigned long pi_utils_get_phy_memory_size();
   double pi_utils_get_phy_memory_size_in(pi_unit_et unit);
+  long long pi_utils_jiffies_to_microsecond(long long jiffies);
 
 #endif /* __PI_UTILS_H__ */

@@ -120,8 +120,10 @@ int main(int argc, char** argv) {
     printf("\tFlags: %lu.\n", stat.flags);
     printf("\tMin page faults: %lu. (childs): %lu.\n", stat.minflt, stat.cminflt);
     printf("\tMax page faults: %lu. (childs): %lu.\n", stat.majflt, stat.cmajflt);
-    printf("\tUser time: %llu jiffies. (childs): %llu jiffies.\n", stat.utime, stat.cutime);
-    printf("\tKernel time: %llu jiffies. (childs): %llu jiffies.\n", stat.stime, stat.cstime);
+    printf("\tUser time: %llu jiffies (%lld ms). (childs): %llu jiffies (%lld ms).\n", 
+	   stat.utime, pi_utils_jiffies_to_microsecond(stat.utime), stat.cutime, pi_utils_jiffies_to_microsecond(stat.cutime));
+    printf("\tKernel time: %llu jiffies (%lld ms). (childs): %llu jiffies (%lld ms).\n", 
+	   stat.stime, pi_utils_jiffies_to_microsecond(stat.stime), stat.cstime, pi_utils_jiffies_to_microsecond(stat.cstime));
     printf("\tPriority: %d.\n\tNiceness: %d.\n", stat.priority, stat.nice);
     printf("\tThreads: %d.\n\tStart time: %llu.\n", stat.nlwp, stat.start_time);
     printf("\tVirtual memory space (in page): %lu.\n\tResident set (in page): %lu.\n", stat.vsize, stat.vm_rss);
@@ -133,7 +135,8 @@ int main(int argc, char** argv) {
     printf("\tWaits: %lu.\n\tTerminates signals: %lld.\n", stat.wchan, stat.sigpnd);
     printf("\tCPU scheduled: %d.\n\tRT priority: %lu.\n", stat.processor, stat.rtprio);
     printf("\tScheduling policy: %lu.\n\tTime wait for I/O: %lu.\n", stat.sched, stat.twait);
-    printf("\tGuest time: %llu jiffies.\n\tGuest time (childs): %llu jiffies.\n", stat.gtime, stat.gctime);
+    printf("\tGuest time: %llu jiffies (%lld ms).\n\tGuest time (childs): %llu jiffies (%lld ms).\n", 
+	   stat.gtime, pi_utils_jiffies_to_microsecond(stat.gtime), stat.gctime, pi_utils_jiffies_to_microsecond(stat.gctime));
   }
   return 0;
 }
