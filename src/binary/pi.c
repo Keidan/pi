@@ -58,7 +58,6 @@ void usage(int err) {
 
 int main(int argc, char** argv) {
   int opt;
-  long page_size_kb;
   struct process_list_s* iter;
   struct process_stat_s stat;
   fprintf(stdout, "Process Information is a FREE software v%d.%d.\nCopyright 2011-2013 By kei\nLicense GPL.\n", PI_VERSION_MAJOR, PI_VERSION_MINOR);
@@ -97,13 +96,22 @@ int main(int argc, char** argv) {
     usage(EXIT_FAILURE);
   }
 
-  page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
+  printf("Nb processors configured: %ld\n", pi_utils_get_nprocessors_configured());
+  printf("Nb processors online: %ld\n", pi_utils_get_nprocessors_online());
+  printf("Page size: %ld bytes, (%lf Kb)\n", 
+	 pi_utils_get_page_size(), pi_utils_get_page_size_in(PI_UNIT_KBYTES));
+  printf("Physical pages: %ld\n", pi_utils_get_phy_pages());
+  printf("Available physical pages: %ld\n", pi_utils_get_available_phy_pages());
+  printf("Physical memory size (RAM): %lu bytes, %lf Kb, %lf Mb, %lf Gb\n", 
+	 pi_utils_get_phy_memory_size(), pi_utils_get_phy_memory_size_in(PI_UNIT_KBYTES), 
+	 pi_utils_get_phy_memory_size_in(PI_UNIT_MBYTES), pi_utils_get_phy_memory_size_in(PI_UNIT_GBYTES));
 
   /* parse la liste */
   list_for_each_entry(iter, &list_process.list, list) {
     pi_parser_proc_stat(&stat, iter->pid);
     
     printf("Process stat:\n");
+
     printf("\tPID: %d.\n\tName: %s.\n", stat.pid, stat.name);
     printf("\tState: %c (%s).\n", stat.state.st, stat.state.desc);
     printf("\tPPID: %d.\n\tGroup: %d.\n", stat.ppid, stat.pgrp);
@@ -126,8 +134,6 @@ int main(int argc, char** argv) {
     printf("\tCPU scheduled: %d.\n\tRT priority: %lu.\n", stat.processor, stat.rtprio);
     printf("\tScheduling policy: %lu.\n\tTime wait for I/O: %lu.\n", stat.sched, stat.twait);
     printf("\tGuest time: %llu jiffies.\n\tGuest time (childs): %llu jiffies.\n", stat.gtime, stat.gctime);
-
-    printf("\n\tVM USAGE: %lf.\n\tResident SET: %ld.\n", stat.vsize / 1024.0, stat.vm_rss * page_size_kb);
   }
   return 0;
 }

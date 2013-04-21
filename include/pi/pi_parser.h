@@ -81,8 +81,6 @@
       llu_t              gtime;               /* guest time, measured in jiffies. */
       llu_t              gctime;              /* guest time of the children, measured in jiffies. */  
   };
-
-  void pi_parser_get_proc_filename(char filename[FILENAME_MAX], i_t pid, const char* file);
   
   int pi_parser_proc_stat(struct process_stat_s *stat, i_t pid);
 

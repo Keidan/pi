@@ -26,6 +26,7 @@
   #include <pi/stringtoken.h>
   #include <pi/pi_log.h>
   #include <pi/pi_process.h>
+  #include <pi/pi_utils.h>
   #include <pi/pi_parser.h>
 
 #endif /* __PI_H__ */

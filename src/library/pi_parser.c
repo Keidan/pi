@@ -33,19 +33,13 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-
-void pi_parser_get_proc_filename(char filename[FILENAME_MAX], i_t pid, const char* file) {
-  snprintf(filename, FILENAME_MAX, "/proc/%d/%s", pid, file);
-}
-
-
 int pi_parser_proc_stat(struct process_stat_s *stat, i_t pid) {
   FILE* file = NULL;
   size_t sz = 0;
   char filename[FILENAME_MAX];
   char *buffer = 0;
   /* build le nom du fichier */
-  pi_parser_get_proc_filename(filename, pid, "stat");
+  pi_utils_get_proc_filename(filename, pid, "stat");
 
   /* ouverture du fichier */
   if((file = fopen(filename, "r")) == NULL) {
@@ -55,7 +49,6 @@ int pi_parser_proc_stat(struct process_stat_s *stat, i_t pid) {
 
   getline(&buffer, &sz, file);
   fclose (file);
-  pi_logger(PI_DEBUG, "Buffer: %s\n", buffer);
   memset(stat, 0, sizeof(struct process_stat_s));
   sscanf(buffer, "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %llu %llu %llu %llu %d %d %d %d "
 	 "%llu %lu %lu %lu %lu %lu %lu %lu %lu %lld %lld %lld %lld %lu %c %c %lld %d %lu %lu %lu %llu %llu",
