@@ -1,6 +1,6 @@
 /**
  *******************************************************************************
- * @file pi.h
+ * @file pi_config.h
  * @author Keidan
  * @date 03/04/2013
  * @par Project
@@ -20,13 +20,11 @@
  *
  *******************************************************************************
  */
-#ifndef __PI_H__
-  #define __PI_H__
+#ifndef __PI_CONFIG_H__
+  #define __PI_CONFIG_H__
 
-  #include <pi/stringtoken.h>
-  #include <pi/pi_log.h>
-  #include <pi/pi_process.h>
-  #include <pi/pi_utils.h>
-  #include <pi/pi_parser.h>
+  // the configured options and settings for PI
+  #define PI_VERSION_MAJOR 2
+  #define PI_VERSION_MINOR 0
 
-#endif /* __PI_H__ */
+#endif /* __PSTATS_CONFIG_H__ */

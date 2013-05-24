@@ -2,32 +2,35 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(pi C)
 
+
+if("${DISTRIBUTION}" MATCHES "debug")
+  set(DISTRIBUTION "debug")
+  set(CMAKE_C_FLAGS "-Wall -O0 -g -fPIC")
+  add_definitions(-DDEBUG)
+else()
+  set(CMAKE_C_FLAGS "-Wall -Werror -O2")
+  set(DISTRIBUTION "release")
+endif()
+message("-- Target mode: ${DISTRIBUTION}")
+
 # update directories
 set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
-set(PI_SRC_BIN_DIR ${CMAKE_SOURCE_DIR}/src/binary)
-set(PI_SRC_LIB_DIR ${CMAKE_SOURCE_DIR}/src/library)
-set(PI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(PI_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(TK_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/../tk/include)
 set(EXECUTABLE_OUTPUT_PATH ${PI_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${PI_BINARY_DIR})
 
 # global config
-include_directories("${PI_INCLUDE_DIR}")
-link_directories("${LIBRARY_OUTPUT_PATH}")
+include_directories("${TK_INCLUDE_DIR}")
 
 # removes generated files
 add_custom_target(clean-all
    COMMAND ${CMAKE_BUILD_TOOL} clean
-   COMMAND ${CMAKE_COMMAND} -P scripts/clean-all.cmake
+   COMMAND ${CMAKE_COMMAND} -P cmake/clean-all.cmake
 )
 
 # The version number.
-set (PI_VERSION_MAJOR 1)
-set (PI_VERSION_MINOR 2)
-
-# CFlags Release
-set(CMAKE_C_FLAGS "-Wall -Werror -Wno-unused-result -O2")
-# CFlags Debug
-# set(CMAKE_C_FLAGS "-Wall -Werror -O0 -g")
+set (PI_VERSION_MAJOR 2)
+set (PI_VERSION_MINOR 0)
 
 # To produce x86_64 binaries
 if("${CMAKE_BUILD_TYPE}" MATCHES "x86_64")
@@ -36,10 +39,10 @@ if("${CMAKE_BUILD_TYPE}" MATCHES "x86_64")
 
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
 
-  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/x86_64)
+  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${DISTRIBUTION}/x86_64)
   set(EXECUTABLE_OUTPUT_PATH ${PI_BINARY_DIR})
-  set(LIBRARY_OUTPUT_PATH ${PI_BINARY_DIR})
   file(MAKE_DIRECTORY ${PI_BINARY_DIR})
+  link_directories("${CMAKE_SOURCE_DIR}/../tk/lib/${DISTRIBUTION}/x86_64")
 # To produce x86 binaries
 elseif("${CMAKE_BUILD_TYPE}" MATCHES "x86")
   # the name of the target operating system
@@ -47,10 +50,10 @@ elseif("${CMAKE_BUILD_TYPE}" MATCHES "x86")
  
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
 
-  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/x86)
+  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${DISTRIBUTION}/x86)
   set(EXECUTABLE_OUTPUT_PATH ${PI_BINARY_DIR})
-  set(LIBRARY_OUTPUT_PATH ${PI_BINARY_DIR})
   file(MAKE_DIRECTORY ${PI_BINARY_DIR})
+  link_directories("${CMAKE_SOURCE_DIR}/../tk/lib/${DISTRIBUTION}/x86")
 # To produce xscale binaries
 elseif("${CMAKE_BUILD_TYPE}" MATCHES "xscale")
   set(CMAKE_SYSTEM_NAME Linux)
@@ -71,14 +74,13 @@ elseif("${CMAKE_BUILD_TYPE}" MATCHES "xscale")
 
   add_definitions(-DTARGET_BIGENDIAN)
 
-  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/xscale)
+  set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${DISTRIBUTION}/xscale)
   set(EXECUTABLE_OUTPUT_PATH ${PI_BINARY_DIR})
-  set(LIBRARY_OUTPUT_PATH ${PI_BINARY_DIR})
   file(MAKE_DIRECTORY ${PI_BINARY_DIR})
+  link_directories("${CMAKE_SOURCE_DIR}/../tk/lib/${DISTRIBUTION}/xscale")
 
 else()
   message(FATAL_ERROR "Invalid usage please use: cmake -DCMAKE_BUILD_TYPE=[x86|x86_64|xscale]")
 endif()
 
-add_subdirectory(${PI_SRC_LIB_DIR})
-add_subdirectory(${PI_SRC_BIN_DIR})
+add_subdirectory(${PI_SRC_DIR})
