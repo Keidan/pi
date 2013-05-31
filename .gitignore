@@ -4,3 +4,4 @@ Makefile
 CMakeFiles
 CMakeCache*
 cmake_*
+doc

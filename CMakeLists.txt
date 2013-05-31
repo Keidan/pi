@@ -26,6 +26,9 @@ add_custom_target(clean-all
    COMMAND ${CMAKE_BUILD_TOOL} clean
    COMMAND ${CMAKE_COMMAND} -P cmake/clean-all.cmake
 )
+add_custom_target(doxygen
+   COMMAND ${CMAKE_COMMAND} -P cmake/doxygen.cmake
+)
 
 # The version number.
 set (PI_VERSION_MAJOR 2)

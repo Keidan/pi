@@ -12,6 +12,7 @@ set(cmake_generated ${CMAKE_BINARY_DIR}/CMakeCache.txt
                     ${CMAKE_BINARY_DIR}/bin/x86
                     ${CMAKE_BINARY_DIR}/bin/x86_64
                     ${CMAKE_BINARY_DIR}/bin/xscale
+                    ${CMAKE_BINARY_DIR}/doc
 )
 
 foreach(file ${cmake_generated})
