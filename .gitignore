@@ -4,4 +4,7 @@ Makefile
 CMakeFiles
 CMakeCache*
 cmake_*
+#*
+.#*
 doc
+pi_config.h

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(pi C)
 
-
 if("${DISTRIBUTION}" MATCHES "debug")
   set(DISTRIBUTION "debug")
   set(CMAKE_C_FLAGS "-Wall -O0 -g -fPIC")
@@ -21,7 +20,7 @@ set(TK_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/lib/tk/include)
 # global config
 include_directories("${TK_INCLUDE_DIR}")
 
-# removes generated files
+# add custom targets
 add_custom_target(clean-all
    COMMAND ${CMAKE_BUILD_TOOL} clean
    COMMAND ${CMAKE_COMMAND} -P cmake/clean-all.cmake
@@ -29,10 +28,9 @@ add_custom_target(clean-all
 add_custom_target(doxygen
    COMMAND ${CMAKE_COMMAND} -P cmake/doxygen.cmake
 )
-
 # The version number.
-set (PI_VERSION_MAJOR 2)
-set (PI_VERSION_MINOR 1)
+set (PI_VERSION_MAJOR 1)
+set (PI_VERSION_MINOR 2)
 
 # To produce x86_64 binaries
 if("${CMAKE_BUILD_TYPE}" MATCHES "x86_64")
@@ -70,12 +68,13 @@ else()
 endif()
 
 
+set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${DISTRIBUTION}/${CMAKE_BUILD_TYPE})
 file(MAKE_DIRECTORY ${PI_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${PI_BINARY_DIR})
-set(PI_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${DISTRIBUTION}/${CMAKE_BUILD_TYPE})
 link_directories("${CMAKE_SOURCE_DIR}/lib/tk/lib/${DISTRIBUTION}/${CMAKE_BUILD_TYPE}")
 
 add_subdirectory(${PI_SRC_DIR})
 
 # add TK env
 include(cmake/tk.cmake)
+

@@ -30,7 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <tk/sys/log.h>
-#include <tk/sys/sysutils.h>
+#include <tk/sys/stools.h>
+#include <tk/sys/ssig.h>
 #include <tk/sys/proc.h>
 #include "pi_process.h"
 
@@ -43,7 +44,7 @@ static const struct option long_options[] = {
     { NULL     , 0, NULL, 0   } 
 };
 
-static void pi_sig_int(sig_t s);
+static void pi_signals(int s);
 static void pi_cleanup(void);
 
 /**
@@ -63,17 +64,16 @@ int main(int argc, char** argv) {
   int opt;
   struct process_list_s* iter;
   struct proc_stat_s stat;
+
+
+  ssig_init(log_init_cast_user("pi", LOG_PID|LOG_CONS|LOG_PERROR), pi_cleanup);
+  ssig_add_signal(SIGINT, pi_signals);
+  ssig_add_signal(SIGTERM, pi_signals);
+
   fprintf(stdout, "Process Information is a FREE software v%d.%d.\nCopyright 2011-2013 By kei\nLicense GPL.\n", PI_VERSION_MAJOR, PI_VERSION_MINOR);
 
   /* init de la liste */
   pi_process_init(&list_process);
-  /* ouverture d'une session syslog. */
-  log_init("pi", LOG_PID|LOG_CONS|LOG_PERROR, LOG_USER);
-
-
-  /* pour fermer proprement sur le kill */
-  atexit(pi_cleanup);
-  signal(SIGINT, (__sighandler_t)pi_sig_int);
 
   while ((opt = getopt_long(argc, argv, "hp:s", long_options, NULL)) != -1) {
     switch (opt) {
@@ -99,15 +99,15 @@ int main(int argc, char** argv) {
     usage(EXIT_FAILURE);
   }
 
-  printf("Nb processors configured: %ld\n", sysutils_get_nprocessors_configured());
-  printf("Nb processors online: %ld\n", sysutils_get_nprocessors_online());
+  printf("Nb processors configured: %ld\n", stools_get_nprocessors_configured());
+  printf("Nb processors online: %ld\n", stools_get_nprocessors_online());
   printf("Page size: %ld bytes, (%lf Kb)\n", 
-	 sysutils_get_page_size(), sysutils_get_page_size_in(SYSUTILS_UNIT_KBYTES));
-  printf("Physical pages: %ld\n", sysutils_get_phy_pages());
-  printf("Available physical pages: %ld\n", sysutils_get_available_phy_pages());
+	 stools_get_page_size(), stools_get_page_size_in(STOOLS_UNIT_KBYTES));
+  printf("Physical pages: %ld\n", stools_get_phy_pages());
+  printf("Available physical pages: %ld\n", stools_get_available_phy_pages());
   printf("Physical memory size (RAM): %lu bytes, %lf Kb, %lf Mb, %lf Gb\n", 
-	 sysutils_get_phy_memory_size(), sysutils_get_phy_memory_size_in(SYSUTILS_UNIT_KBYTES), 
-	 sysutils_get_phy_memory_size_in(SYSUTILS_UNIT_MBYTES), sysutils_get_phy_memory_size_in(SYSUTILS_UNIT_GBYTES));
+	 stools_get_phy_memory_size(), stools_get_phy_memory_size_in(STOOLS_UNIT_KBYTES), 
+	 stools_get_phy_memory_size_in(STOOLS_UNIT_MBYTES), stools_get_phy_memory_size_in(STOOLS_UNIT_GBYTES));
 
   /* parse la liste */
   list_for_each_entry(iter, &list_process.list, list) {
@@ -124,9 +124,9 @@ int main(int argc, char** argv) {
     printf("\tMin page faults: %lu. (childs): %lu.\n", stat.minflt, stat.cminflt);
     printf("\tMax page faults: %lu. (childs): %lu.\n", stat.majflt, stat.cmajflt);
     printf("\tUser time: %llu jiffies (%lld ms). (childs): %llu jiffies (%lld ms).\n", 
-	   stat.utime, sysutils_jiffies_to_microsecond(stat.utime), stat.cutime, sysutils_jiffies_to_microsecond(stat.cutime));
+	   stat.utime, stools_jiffies_to_microsecond(stat.utime), stat.cutime, stools_jiffies_to_microsecond(stat.cutime));
     printf("\tKernel time: %llu jiffies (%lld ms). (childs): %llu jiffies (%lld ms).\n", 
-	   stat.stime, sysutils_jiffies_to_microsecond(stat.stime), stat.cstime, sysutils_jiffies_to_microsecond(stat.cstime));
+	   stat.stime, stools_jiffies_to_microsecond(stat.stime), stat.cstime, stools_jiffies_to_microsecond(stat.cstime));
     printf("\tPriority: %d.\n\tNiceness: %d.\n", stat.priority, stat.nice);
     printf("\tThreads: %d.\n\tStart time: %llu.\n", stat.nlwp, stat.start_time);
     printf("\tVirtual memory space (in page): %lu.\n\tResident set (in page): %lu.\n", stat.vsize, stat.vm_rss);
@@ -139,13 +139,15 @@ int main(int argc, char** argv) {
     printf("\tCPU scheduled: %d.\n\tRT priority: %lu.\n", stat.processor, stat.rtprio);
     printf("\tScheduling policy: %lu.\n\tTime wait for I/O: %lu.\n", stat.sched, stat.twait);
     printf("\tGuest time: %llu jiffies (%lld ms).\n\tGuest time (childs): %llu jiffies (%lld ms).\n", 
-	   stat.gtime, sysutils_jiffies_to_microsecond(stat.gtime), stat.gctime, sysutils_jiffies_to_microsecond(stat.gctime));
+	   stat.gtime, stools_jiffies_to_microsecond(stat.gtime), stat.gctime, stools_jiffies_to_microsecond(stat.gctime));
   }
   return 0;
 }
 
 
-static void pi_sig_int(sig_t s) {
+static void pi_signals(int s) {
+  if(s == SIGINT)
+    printf("\n"); // for ^C
   exit(0); /* call atexit */
 }
 
