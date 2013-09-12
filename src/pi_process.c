@@ -22,8 +22,8 @@
  */
 #include "pi_process.h"
 #include <tk/sys/log.h>
-#include <tk/text/stringtoken.h>
-#include <tk/text/string.h>
+#include <tk/utils/stringtoken.h>
+#include <tk/utils/string.h>
 #include <errno.h>
 
 

@@ -24,7 +24,7 @@
   #define __PI_CONFIG_H__
 
   // the configured options and settings for PI
-  #define PI_VERSION_MAJOR 3
-  #define PI_VERSION_MINOR 5
+  #define PI_VERSION_MAJOR 1
+  #define PI_VERSION_MINOR 3
 
 #endif /* __PSTATS_CONFIG_H__ */
