@@ -12,4 +12,4 @@ set(bin_src
   ${PI_SRC_DIR}/pi_process.c
 )
 add_executable(pi ${bin_src})
-target_link_libraries(pi tk zlib-minizip)
+target_link_libraries(pi tk)
